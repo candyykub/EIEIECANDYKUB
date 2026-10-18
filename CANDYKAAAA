@@ -1,0 +1,1561 @@
+--[[
+    PropTeleport FX v9 - 35 modes, Hello Kitty pink UI, editable names
+    Place: StarterPlayer > StarterPlayerScripts
+    Target: "Propwhoisdz0_0" in workspace.WorkspaceCom["001_TrafficCones"]
+    Keys: ] = start/stop   RightShift = show/hide UI
+    Rename modes: type in the rename box in the UI, or edit MODE_NAMES below
+]]
+
+----------------------------------------------------------------
+-- EDIT UI TEXT HERE (or rename modes inside the UI: it saves automatically)
+----------------------------------------------------------------
+local UI_TEXT = {
+    title = "CANDY NARAK EIEI \u{2661}",
+    subtitle = "hello kitty edition by whoisdz0_0 \u{2605} 35 \u{E42}\u{E2B}\u{E21}\u{E14}",
+    cardModes = "\u{E40}\u{E25}\u{E37}\u{E2D}\u{E01}\u{E42}\u{E2B}\u{E21}\u{E14}",
+    cardControl = "\u{E04}\u{E27}\u{E1A}\u{E04}\u{E38}\u{E21}",
+    cardTune = "\u{E1B}\u{E23}\u{E31}\u{E1A}\u{E41}\u{E15}\u{E48}\u{E07}",
+    startLabel = "\u{E40}\u{E23}\u{E34}\u{E48}\u{E21}\u{E25}\u{E39}\u{E01}\u{E40}\u{E25}\u{E48}\u{E19}",
+    autoLabel = "Auto \u{E2A}\u{E25}\u{E31}\u{E1A}\u{E42}\u{E2B}\u{E21}\u{E14}",
+    pullButton = "\u{2665} \u{E14}\u{E36}\u{E07}\u{E21}\u{E32}\u{E17}\u{E35}\u{E48}\u{E15}\u{E31}\u{E27} (\u{E04}\u{E23}\u{E31}\u{E49}\u{E07}\u{E40}\u{E14}\u{E35}\u{E22}\u{E27})",
+    footer = "\u{2661}  made with CANDY whoisdz0_0  \u{2661}",
+}
+
+-- Mode names 1-35. Easiest way to rename: use the rename box in the UI (type Thai normally)
+local MODE_NAMES = {
+    "ตามหลังค่ะ", -- 1
+    "อันนี้วงกลม", -- 2
+    "\u{E17}\u{E2D}\u{E23}\u{E4C}\u{E19}\u{E32}\u{E42}\u{E14}", -- 3
+    "หมุนนๆข้างหน้า", -- 4
+    "\u{E14}\u{E32}\u{E27}\u{E2B}\u{E49}\u{E32}\u{E41}\u{E09}\u{E01} มองจากด้านบน", -- 5
+    "หัวใจของเราเองอิอิ", -- 6
+    "ไม่รู้อะะ555", -- 7
+    "มังกืออเลื้อยๆ", -- 8
+    "\u{E1D}\u{E19}\u{E14}\u{E32}\u{E27}\u{E15}\u{E01}", -- 9
+    "บอลพลังงานจ้าา", -- 10
+    "ม้าหมุนมั้งง555", -- 11
+    "ยืดๆหดๆ", -- 12
+    "\u{E1E}\u{E23}\u{E30}\u{E08}\u{E31}\u{E19}\u{E17}\u{E23}\u{E4C}\u{E40}\u{E2A}\u{E35}\u{E49}\u{E22}\u{E27}", -- 13
+    "\u{E2A}\u{E32}\u{E22}\u{E1F}\u{E49}\u{E32}\u{E1F}\u{E32}\u{E14}", -- 14
+    "อันนี้จะตกใส่ใช้เมาส์เล็ง", -- 15
+    "ไฟมั้งงนะคะ", -- 16
+    "\u{E01}\u{E32}\u{E41}\u{E25}\u{E47}\u{E01}\u{E0B}\u{E35}\u{E01}\u{E49}\u{E19}\u{E2B}\u{E2D}\u{E22}", -- 17
+    "แกว่งติ้วๆๆ", -- 18
+    "\u{E2A}\u{E36}\u{E19}\u{E32}\u{E21}\u{E34}\u{E1E}\u{E38}\u{E48}\u{E07}\u{E43}\u{E2A}\u{E48}", -- 19
+    "พลุระเบิดตุ๊มมม555", -- 20
+    "\u{E2D}\u{E38}\u{E42}\u{E21}\u{E07}\u{E04}\u{E4C}\u{E27}\u{E32}\u{E23}\u{E4C}\u{E1B}", -- 21
+    "\u{E14}\u{E32}\u{E27}\u{E15}\u{E01}\u{E2A}\u{E27}\u{E19}\u{E01}\u{E31}\u{E19}", -- 22
+    "\u{E19}\u{E49}\u{E33}\u{E15}\u{E01}", -- 23
+    "\u{E04}\u{E25}\u{E37}\u{E48}\u{E19}\u{E14}\u{E32}\u{E27}\u{E15}\u{E01}", -- 24
+    "\u{E23}\u{E30}\u{E40}\u{E1A}\u{E34}\u{E14}\u{E15}\u{E39}\u{E21}", -- 25
+    "\u{E1D}\u{E19}\u{E44}\u{E1F}\u{E01}\u{E23}\u{E30}\u{E41}\u{E17}\u{E01}\u{E1E}\u{E37}\u{E49}\u{E19}", -- 26
+    "\u{E1E}\u{E32}\u{E22}\u{E38}\u{E40}\u{E09}\u{E35}\u{E22}\u{E07}", -- 27
+    "\u{E19}\u{E49}\u{E33}\u{E1E}\u{E38}", -- 28
+    "\u{E20}\u{E39}\u{E40}\u{E02}\u{E32}\u{E44}\u{E1F}\u{E1B}\u{E30}\u{E17}\u{E38}", -- 29
+    "ขยายออกกงั้บ", -- 30
+    "หิม๊ะะค่ะ", -- 31
+    "\u{E14}\u{E32}\u{E27}\u{E15}\u{E01}\u{E1E}\u{E38}\u{E48}\u{E07}\u{E40}\u{E02}\u{E49}\u{E32}\u{E2B}\u{E32}\u{E15}\u{E31}\u{E27}", -- 32
+    "ลอยขึ้นนน", -- 33
+    "สะพานนน", -- 34
+    "อันนี้โตเกียวม้วน", -- 35
+}
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+
+local player = Players.LocalPlayer
+
+local CONFIG = {
+    RootName = "WorkspaceCom",
+    FolderName = "001_TrafficCones",
+    PropName = "Propwhoisdz0_0",
+    RemoteName = "SetCurrentCFrame",
+    Spacing = 10,
+    UpdateRate = 15,
+    RescanInterval = 2,
+    InvokeTimeout = 3,
+    AutoSwitchTime = 8,
+}
+
+local state = {
+    mode = 1,
+    running = false,
+    auto = false,
+    autoTimer = 0,
+    speed = 1,
+    spread = 1,
+    dist = 0,
+    targets = {},
+    lastScan = 0,
+    trail = {},
+}
+
+local TAU = math.pi * 2
+local GOLDEN = 2.39996
+local S = CONFIG.Spacing
+local V3 = Vector3.new
+
+local function rand(i, seed)
+    return (math.sin(i * 12.9898 + seed * 78.233) * 43758.5453) % 1
+end
+
+----------------------------------------------------------------
+-- Shape helpers
+----------------------------------------------------------------
+local function arc(cx, cy, r, a0, a1)
+    return function(u)
+        local a = a0 + (a1 - a0) * u
+        return cx + math.cos(a) * r, cy + math.sin(a) * r
+    end
+end
+
+local function poly(pts, closed)
+    local segs, total = {}, 0
+    local count = closed and #pts or #pts - 1
+    for k = 1, count do
+        local a, b = pts[k], pts[k % #pts + 1]
+        local len = math.sqrt((b[1] - a[1]) ^ 2 + (b[2] - a[2]) ^ 2)
+        table.insert(segs, { a, b, len })
+        total += len
+    end
+    return function(u)
+        local d = u * total
+        for _, s in ipairs(segs) do
+            if d <= s[3] then
+                local f = s[3] > 0 and d / s[3] or 0
+                return s[1][1] + (s[2][1] - s[1][1]) * f, s[1][2] + (s[2][2] - s[1][2]) * f
+            end
+            d -= s[3]
+        end
+        local last = segs[#segs][2]
+        return last[1], last[2]
+    end
+end
+
+local function line(x1, y1, x2, y2)
+    return poly({ { x1, y1 }, { x2, y2 } }, false)
+end
+
+local function shapePoint(shape, i, n, flow)
+    local total = 0
+    for _, s in ipairs(shape) do
+        total += s[1]
+    end
+    local u = (((i - 1) / n + (flow or 0)) % 1) * total
+    for _, s in ipairs(shape) do
+        if u < s[1] then
+            return s[2](u / s[1])
+        end
+        u -= s[1]
+    end
+    return shape[#shape][2](1)
+end
+
+local function rot2(x, y, a)
+    local c, s = math.cos(a), math.sin(a)
+    return x * c - y * s, x * s + y * c
+end
+
+local function front(hrp, x, y, dist, height)
+    return hrp.CFrame * CFrame.new(x, (height or 8) + y, -(dist or 15))
+end
+
+----------------------------------------------------------------
+-- Helpers for modes 15-35
+----------------------------------------------------------------
+local mouse = player:GetMouse()
+
+local function aimPoint(hrp)
+    local root = workspace:FindFirstChild(CONFIG.RootName)
+    if root then
+        mouse.TargetFilter = root
+    end
+    local hit = mouse.Hit
+    if hit and (hit.Position - hrp.Position).Magnitude < 300 then
+        return hit.Position
+    end
+    return (hrp.CFrame * CFrame.new(0, -3, -25)).Position
+end
+
+local function cyc(i, t, period, seed)
+    return ((t + rand(i, seed) * period) % period) / period
+end
+
+local function flat(hrp)
+    local lv = hrp.CFrame.LookVector
+    local d = V3(lv.X, 0, lv.Z)
+    if d.Magnitude < 0.01 then
+        d = V3(0, 0, -1)
+    end
+    return CFrame.lookAt(hrp.Position, hrp.Position + d)
+end
+
+local function streak(a, b, p, spin)
+    local pos = a:Lerp(b, p)
+    return CFrame.lookAt(pos, pos + (b - a)) * CFrame.Angles(0, 0, spin or 0)
+end
+
+local function impact(start, land, p, i, t, spread)
+    if p < 0.8 then
+        return streak(start, land, (p / 0.8) ^ 2, t * 8)
+    end
+    local f = (p - 0.8) / 0.2
+    local a = rand(i, 40) * TAU
+    local sp = spread or 6
+    return CFrame.new(land + V3(math.cos(a) * f * sp, math.sin(f * math.pi) * 4, math.sin(a) * f * sp)) * CFrame.Angles(f * 6, a, 0)
+end
+
+----------------------------------------------------------------
+-- 35 modes
+----------------------------------------------------------------
+local MODES = {
+    { name = "\u{E21}\u{E31}\u{E07}\u{E01}\u{E23}\u{E15}\u{E32}\u{E21}\u{E2B}\u{E25}\u{E31}\u{E07}", raw = true, fn = function(i, n, t, hrp)
+        local back = i * math.floor(S * 0.5)
+        local idx = #state.trail - back
+        local base = idx >= 1 and state.trail[idx] or (hrp.CFrame * CFrame.new(0, 0, back)).Position
+        return CFrame.new(base + V3(0, 1 + math.sin(t * 5 - i) * 1.5, 0)) * CFrame.Angles(0, t * 2 + i, 0)
+    end },
+
+    { name = "\u{E27}\u{E07}\u{E42}\u{E04}\u{E08}\u{E23}\u{E23}\u{E2D}\u{E1A}\u{E15}\u{E31}\u{E27}", fn = function(i, n, t, hrp)
+        local r = math.max(S, n * S / TAU)
+        local a = t * 1.5 + (i - 1) * TAU / n
+        local c = hrp.Position
+        local pos = c + V3(math.cos(a) * r, 1 + math.sin(t * 2 + i) * 1.5, math.sin(a) * r)
+        return CFrame.lookAt(pos, c)
+    end },
+
+    { name = "\u{E17}\u{E2D}\u{E23}\u{E4C}\u{E19}\u{E32}\u{E42}\u{E14}", fn = function(i, n, t, hrp)
+        local h = ((i - 1) / n * 25 + t * 5) % 25
+        local a = t * 4 + i * 0.8
+        local r = 3 + h * 0.5
+        local pos = hrp.Position + V3(math.cos(a) * r, h - 2, math.sin(a) * r)
+        return CFrame.new(pos) * CFrame.Angles(0, -a, math.rad(20))
+    end },
+
+    { name = "\u{E42}\u{E25}\u{E48}\u{E2B}\u{E21}\u{E38}\u{E19}\u{E14}\u{E49}\u{E32}\u{E19}\u{E2B}\u{E19}\u{E49}\u{E32}", fn = function(i, n, t, hrp)
+        local k = i - 1
+        local r = math.sqrt(k / n) * 8
+        local a = k * GOLDEN + t * 2
+        return hrp.CFrame * CFrame.new(math.cos(a) * r, 3 + math.sin(a) * r, -8) * CFrame.Angles(0, 0, a)
+    end },
+
+    { name = "\u{E14}\u{E32}\u{E27}\u{E2B}\u{E49}\u{E32}\u{E41}\u{E09}\u{E01}", fn = function(i, n, t, hrp)
+        local R, Ri, rot = 20, 8, t * 0.5
+        local function vtx(k)
+            local rad = (k % 2 == 0) and R or Ri
+            local a = k * TAU / 10 + rot
+            return V3(math.cos(a) * rad, 0, math.sin(a) * rad)
+        end
+        local seg = (((i - 1) / n + t * 0.05) % 1) * 10
+        local k = math.floor(seg)
+        local p = vtx(k):Lerp(vtx(k + 1), seg - k)
+        return CFrame.new(hrp.Position + p + V3(0, 1 + math.sin(t * 3 + i) * 0.5, 0))
+    end },
+
+    { name = "\u{E2B}\u{E31}\u{E27}\u{E43}\u{E08}\u{E40}\u{E15}\u{E49}\u{E19}", fn = function(i, n, t, hrp)
+        local u = (i - 1) / n * TAU + t * 0.5
+        local x = 16 * math.sin(u) ^ 3
+        local y = 13 * math.cos(u) - 5 * math.cos(2 * u) - 2 * math.cos(3 * u) - math.cos(4 * u)
+        local sc = 0.6 * (1 + 0.12 * math.sin(t * 6))
+        return hrp.CFrame * CFrame.new(x * sc, 8 + y * sc, -15)
+    end },
+
+    { name = "\u{E2D}\u{E30}\u{E15}\u{E2D}\u{E21}", fn = function(i, n, t, hrp)
+        local ring = (i - 1) % 3
+        local k = math.floor((i - 1) / 3)
+        local m = math.max(1, math.ceil(n / 3))
+        local a = t * 3 + k * TAU / m
+        local v = V3(math.cos(a) * 12, 0, math.sin(a) * 12)
+        local tilt = CFrame.Angles(math.rad(60) * ring, math.rad(40) * ring, 0)
+        return CFrame.new(hrp.Position + V3(0, 3, 0) + tilt:VectorToWorldSpace(v))
+    end },
+
+    { name = "\u{E21}\u{E31}\u{E07}\u{E01}\u{E23}\u{E1A}\u{E34}\u{E19}\u{E1A}\u{E19}\u{E1F}\u{E49}\u{E32}", fn = function(i, n, t, hrp)
+        local function at(u)
+            return hrp.Position + V3(25 * math.sin(u * 2), 14 + 6 * math.sin(u * 3), 25 * math.sin(u * 3 + 0.5))
+        end
+        local u = t * 0.8 - i * 0.12
+        return CFrame.lookAt(at(u), at(u + 0.05))
+    end },
+
+    { name = "\u{E1D}\u{E19}\u{E14}\u{E32}\u{E27}\u{E15}\u{E01}", fn = function(i, n, t, hrp)
+        local rx = (rand(i, 1) - 0.5) * 50
+        local rz = (rand(i, 2) - 0.5) * 50
+        local spd = 15 + rand(i, 3) * 15
+        local h = 40 - ((t * spd + rand(i, 4) * 40) % 40)
+        return CFrame.new(hrp.Position + V3(rx, h, rz)) * CFrame.Angles(math.rad(35), t * 3 + i, 0)
+    end },
+
+    { name = "\u{E25}\u{E39}\u{E01}\u{E1A}\u{E2D}\u{E25}\u{E1E}\u{E25}\u{E31}\u{E07}\u{E07}\u{E32}\u{E19}", fn = function(i, n, t, hrp)
+        local k = i - 1
+        local y = 1 - 2 * (k + 0.5) / n
+        local rr = math.sqrt(math.max(0, 1 - y * y))
+        local a = k * GOLDEN + t
+        local R = 6 + (math.sin(t * 2) * 0.5 + 0.5) * 14
+        return CFrame.new(hrp.Position + V3(0, 3, 0) + V3(math.cos(a) * rr, y, math.sin(a) * rr) * R)
+    end },
+
+    { name = "\u{E21}\u{E49}\u{E32}\u{E2B}\u{E21}\u{E38}\u{E19}", fn = function(i, n, t, hrp)
+        local a = (i - 1) / n * TAU + t * 0.7
+        local r = math.max(10, n * S / TAU * 0.7)
+        local y = 2 + math.sin(t * 3 + i * math.pi / 2) * 3
+        local pos = hrp.Position + V3(math.cos(a) * r, y, math.sin(a) * r)
+        return CFrame.lookAt(pos, pos + V3(-math.sin(a), 0, math.cos(a)))
+    end },
+
+    { name = "\u{E41}\u{E21}\u{E48}\u{E40}\u{E2B}\u{E25}\u{E47}\u{E01}\u{E2B}\u{E14}\u{E02}\u{E22}\u{E32}\u{E22}", fn = function(i, n, t, hrp)
+        local k = i - 1
+        local y = 1 - 2 * (k + 0.5) / n
+        local rr = math.sqrt(math.max(0, 1 - y * y))
+        local a = k * GOLDEN
+        local R = 4 + (math.sin(t * 3 + k * 0.3) * 0.5 + 0.5) * 14
+        return CFrame.new(hrp.Position + V3(0, 4, 0) + V3(math.cos(a) * rr, y, math.sin(a) * rr) * R)
+    end },
+
+    { name = "\u{E1E}\u{E23}\u{E30}\u{E08}\u{E31}\u{E19}\u{E17}\u{E23}\u{E4C}\u{E40}\u{E2A}\u{E35}\u{E49}\u{E22}\u{E27}", fn = function(i, n, t, hrp)
+        local shape = {
+            { 3, arc(0, 0, 10, 0.992, TAU - 0.992) },
+            { 2, arc(4, 0, 8.5, TAU - 1.397, 1.397) },
+        }
+        local x, y = shapePoint(shape, i, n)
+        x, y = rot2(x, y, math.sin(t * 0.8) * 0.4)
+        return front(hrp, x, y + math.sin(t * 2) * 0.6, 18, 10)
+    end },
+
+    { name = "\u{E2A}\u{E32}\u{E22}\u{E1F}\u{E49}\u{E32}\u{E1F}\u{E32}\u{E14}", fn = function(i, n, t, hrp)
+        local shape = { { 1, poly({ { 3, 12 }, { -3, 1 }, { 1, 1 }, { -3, -10 }, { 5, 3 }, { 1, 3 }, { 6, 12 } }, true) } }
+        local x, y = shapePoint(shape, i, n, t * 0.05)
+        local k = math.floor(t * 12)
+        x += (rand(i, k) - 0.5) * 1.2
+        y += (rand(i, k + 99) - 0.5) * 1.2
+        return front(hrp, x, y, 16, 10)
+    end },
+
+    { name = "\u{E2D}\u{E38}\u{E01}\u{E01}\u{E32}\u{E1A}\u{E32}\u{E15}\u{E16}\u{E25}\u{E48}\u{E21}\u{E08}\u{E38}\u{E14}\u{E40}\u{E25}\u{E47}\u{E07}", raw = true, fn = function(i, n, t, hrp)
+        local target = aimPoint(hrp)
+        local period = 2.5
+        local p = ((t + rand(i, 5) * period) % period) / period
+        local land = target + V3((rand(i, 6) - 0.5) * 8, 0, (rand(i, 7) - 0.5) * 8)
+        local start = land + V3(-30 + rand(i, 8) * 10, 60, -30 + rand(i, 9) * 10)
+        if p < 0.8 then
+            local f = (p / 0.8) ^ 2
+            return CFrame.lookAt(start:Lerp(land, f), land) * CFrame.Angles(0, 0, t * 8)
+        end
+        local f = (p - 0.8) / 0.2
+        local a = rand(i, 10) * TAU
+        local pos = land + V3(math.cos(a) * f * 8, math.sin(f * math.pi) * 5, math.sin(a) * f * 8)
+        return CFrame.new(pos) * CFrame.Angles(f * 6, a, 0)
+    end },
+
+    { name = "\u{E40}\u{E1B}\u{E25}\u{E27}\u{E44}\u{E1F}\u{E25}\u{E38}\u{E01}\u{E42}\u{E0A}\u{E19}", fn = function(i, n, t, hrp)
+        local p = (t * 0.8 + rand(i, 11)) % 1
+        local a = rand(i, 12) * TAU
+        local r = (1 - p) * 6 * rand(i, 13) + 1
+        local pos = hrp.Position + V3(math.cos(a) * r + math.sin(t * 6 + i) * 0.6, -2 + p * 14, math.sin(a) * r)
+        return CFrame.new(pos) * CFrame.Angles(0, t * 3 + i, 0)
+    end },
+
+    { name = "\u{E01}\u{E32}\u{E41}\u{E25}\u{E47}\u{E01}\u{E0B}\u{E35}\u{E01}\u{E49}\u{E19}\u{E2B}\u{E2D}\u{E22}", fn = function(i, n, t, hrp)
+        local arm = i % 2
+        local k = (i - 1) / n
+        local r = 3 + k * 25
+        local a = k * TAU * 1.5 + arm * math.pi + t * 0.7
+        return CFrame.new(hrp.Position + V3(math.cos(a) * r, 1 + math.sin(t * 2 + k * 6) * 0.8, math.sin(a) * r))
+    end },
+
+    { name = "\u{E25}\u{E39}\u{E01}\u{E15}\u{E38}\u{E49}\u{E21}\u{E41}\u{E01}\u{E27}\u{E48}\u{E07}", fn = function(i, n, t, hrp)
+        local ang = math.sin(t * 2) * 0.9
+        local d = i / n * 22
+        local dir = hrp.CFrame:VectorToWorldSpace(V3(math.sin(ang), -math.cos(ang), 0))
+        return CFrame.new(hrp.Position + V3(0, 25, 0) + dir * d)
+    end },
+
+    { name = "\u{E2A}\u{E36}\u{E19}\u{E32}\u{E21}\u{E34}\u{E1E}\u{E38}\u{E48}\u{E07}\u{E43}\u{E2A}\u{E48}", fn = function(i, n, t, hrp)
+        local x = ((i - 1) / math.max(1, n - 1) - 0.5) * 40
+        local p = (t * 0.3) % 1
+        local y = math.sin(p * math.pi) * 12 + math.sin(x * 0.3 + t * 4) * 1.5
+        return hrp.CFrame * CFrame.new(x, y - 2, -50 + p * 50)
+    end },
+
+    { name = "\u{E1E}\u{E25}\u{E38}\u{E23}\u{E30}\u{E40}\u{E1A}\u{E34}\u{E14}", fn = function(i, n, t, hrp)
+        local p = (t % 3) / 3
+        local center = hrp.CFrame * CFrame.new(0, 0, -25)
+        if p < 0.35 then
+            return center * CFrame.new(0, p / 0.35 * 25, 0)
+        end
+        local f = (p - 0.35) / 0.65
+        local k = i - 1
+        local y = 1 - 2 * (k + 0.5) / n
+        local rr = math.sqrt(math.max(0, 1 - y * y))
+        local a = k * GOLDEN
+        local R = math.sqrt(f) * 16
+        return center * CFrame.new(math.cos(a) * rr * R, 25 + y * R - f * f * 6, math.sin(a) * rr * R)
+    end },
+
+    { name = "\u{E2D}\u{E38}\u{E42}\u{E21}\u{E07}\u{E04}\u{E4C}\u{E27}\u{E32}\u{E23}\u{E4C}\u{E1B}", fn = function(i, n, t, hrp)
+        local p = ((i - 1) / n + t * 0.2) % 1
+        local r = 10 * (1 - p * 0.8)
+        local a = p * TAU * 4 + t * 2
+        return front(hrp, math.cos(a) * r, math.sin(a) * r, 14 + p * 10, 9)
+    end },
+
+    { name = "\u{E14}\u{E32}\u{E27}\u{E15}\u{E01}\u{E2A}\u{E27}\u{E19}\u{E01}\u{E31}\u{E19}", fn = function(i, n, t, hrp)
+        local F = flat(hrp)
+        local dir = (i % 2 == 0) and 1 or -1
+        local y = 6 + rand(i, 32) * 22
+        local z = -10 - rand(i, 33) * 30
+        return streak(F * V3(-50 * dir, y + 8, z), F * V3(50 * dir, y - 8, z), cyc(i, t, 2, 34), t * 6)
+    end },
+
+    { name = "\u{E19}\u{E49}\u{E33}\u{E15}\u{E01}", fn = function(i, n, t, hrp)
+        local F = flat(hrp)
+        local x = ((i - 1) / math.max(1, n - 1) - 0.5) * 24 + (rand(i, 34) - 0.5) * 1.5
+        local p = cyc(i, t, 1.6, 35)
+        local out = math.min(p * 4, 1) * 3
+        return CFrame.new(F * V3(x, 26 - p * p * 30, -22 - out)) * CFrame.Angles(t * 4 + i, 0, 0)
+    end },
+
+    { name = "\u{E04}\u{E25}\u{E37}\u{E48}\u{E19}\u{E14}\u{E32}\u{E27}\u{E15}\u{E01}", fn = function(i, n, t, hrp)
+        local F = flat(hrp)
+        local x = ((i - 1) / math.max(1, n - 1) - 0.5) * 40
+        local p = (t * 0.6 - (i - 1) / n * 0.8) % 1
+        local land = F * V3(x, -2, -18 + math.sin(x * 0.15) * 4)
+        local start = land + V3(0, 35, 0) + F:VectorToWorldSpace(V3(-10, 0, -10))
+        if p < 0.7 then
+            return streak(start, land, (p / 0.7) ^ 2, t * 5)
+        end
+        return CFrame.new(land + V3(0, math.sin((p - 0.7) / 0.3 * math.pi) * 3, 0))
+    end },
+
+    { name = "\u{E23}\u{E30}\u{E40}\u{E1A}\u{E34}\u{E14}\u{E15}\u{E39}\u{E21}", fn = function(i, n, t, hrp)
+        local F = flat(hrp)
+        local center = F * V3(0, -2, -22)
+        local p = (t % 3) / 3
+        local jit = V3(rand(i, 56) - 0.5, rand(i, 57) - 0.5, rand(i, 58) - 0.5) * 3
+        if p < 0.3 then
+            return streak(center + V3(0, 50, 0) + jit, center + jit, (p / 0.3) ^ 2, t * 8)
+        end
+        local f = (p - 0.3) / 0.7
+        local a = rand(i, 59) * TAU
+        local d = (8 + rand(i, 60) * 20) * f
+        local h = (8 + rand(i, 61) * 14) * 4 * f * (1 - f)
+        return CFrame.new(center + V3(math.cos(a) * d, h, math.sin(a) * d)) * CFrame.Angles(f * 10, a, 0)
+    end },
+
+    { name = "\u{E1D}\u{E19}\u{E44}\u{E1F}\u{E01}\u{E23}\u{E30}\u{E41}\u{E17}\u{E01}\u{E1E}\u{E37}\u{E49}\u{E19}", fn = function(i, n, t, hrp)
+        local base = hrp.Position + V3((rand(i, 43) - 0.5) * 40, -3, (rand(i, 44) - 0.5) * 40)
+        return impact(base + V3(0, 40, 0), base, cyc(i, t, 1.2 + rand(i, 41), 42), i, t, 3)
+    end },
+
+    { name = "\u{E1E}\u{E32}\u{E22}\u{E38}\u{E40}\u{E09}\u{E35}\u{E22}\u{E07}", fn = function(i, n, t, hrp)
+        local F = flat(hrp)
+        local x = (rand(i, 46) - 0.5) * 50
+        local z = -5 - rand(i, 47) * 35
+        local wind = math.sin(t * 0.5) * 20
+        return streak(F * V3(x - wind, 35, z), F * V3(x + wind, -3, z), cyc(i, t, 1.5, 45), 0)
+    end },
+
+    { name = "\u{E19}\u{E49}\u{E33}\u{E1E}\u{E38}", fn = function(i, n, t, hrp)
+        local F = flat(hrp)
+        local p = cyc(i, t, 2, 48)
+        local a = rand(i, 49) * TAU
+        local sp = 4 + rand(i, 50) * 6
+        local h = 4 * p * (1 - p) * (18 + rand(i, 51) * 6)
+        return CFrame.new(F * V3(math.cos(a) * sp * p, -2 + h, -20 + math.sin(a) * sp * p))
+    end },
+
+    { name = "\u{E20}\u{E39}\u{E40}\u{E02}\u{E32}\u{E44}\u{E1F}\u{E1B}\u{E30}\u{E17}\u{E38}", fn = function(i, n, t, hrp)
+        local F = flat(hrp)
+        local p = cyc(i, t, 2.6, 52)
+        local a = rand(i, 53) * TAU
+        local d = 10 + rand(i, 54) * 20
+        local h = 4 * p * (1 - p) * (30 + rand(i, 55) * 10)
+        return CFrame.new(F * V3(math.cos(a) * d * p, -2 + h, -35 + math.sin(a) * d * p)) * CFrame.Angles(t * 5 + i, 0, t * 3)
+    end },
+
+    { name = "\u{E04}\u{E25}\u{E37}\u{E48}\u{E19}\u{E01}\u{E23}\u{E30}\u{E41}\u{E17}\u{E01}", fn = function(i, n, t, hrp)
+        local a = (i - 1) / n * TAU
+        local p = (t * 0.5) % 1
+        local r = 3 + p * 30
+        return CFrame.new(hrp.Position + V3(math.cos(a) * r, -2 + math.sin(p * math.pi) * 3, math.sin(a) * r))
+    end },
+
+    { name = "\u{E2B}\u{E34}\u{E21}\u{E30}\u{E42}\u{E1B}\u{E23}\u{E22}\u{E1B}\u{E23}\u{E32}\u{E22}", fn = function(i, n, t, hrp)
+        local p = cyc(i, t, 6 + rand(i, 59) * 3, 60)
+        local x = (rand(i, 61) - 0.5) * 40
+        local z = (rand(i, 62) - 0.5) * 40
+        return CFrame.new(hrp.Position + V3(x + math.sin(t * 1.5 + i) * 3, 30 - p * 33, z + math.cos(t * 1.2 + i) * 3)) * CFrame.Angles(t + i, t * 0.7, 0)
+    end },
+
+    { name = "\u{E14}\u{E32}\u{E27}\u{E15}\u{E01}\u{E1E}\u{E38}\u{E48}\u{E07}\u{E40}\u{E02}\u{E49}\u{E32}\u{E2B}\u{E32}\u{E15}\u{E31}\u{E27}", fn = function(i, n, t, hrp)
+        local a = rand(i, 65) * TAU
+        local land = hrp.Position + V3(math.cos(a) * 4, -2, math.sin(a) * 4)
+        local start = hrp.Position + V3(math.cos(a) * 40, 40, math.sin(a) * 40)
+        return impact(start, land, cyc(i, t, 2, 66), i, t, 4)
+    end },
+
+    { name = "\u{E08}\u{E23}\u{E27}\u{E14}\u{E1E}\u{E38}\u{E48}\u{E07}\u{E02}\u{E36}\u{E49}\u{E19}\u{E1F}\u{E49}\u{E32}", fn = function(i, n, t, hrp)
+        local x = (rand(i, 67) - 0.5) * 30
+        local z = (rand(i, 68) - 0.5) * 30
+        local p = cyc(i, t, 2, 69)
+        local h = p * p * 50
+        return CFrame.new(hrp.Position + V3(x + math.sin(h * 0.3) * 2, -2 + h, z)) * CFrame.Angles(0, t * 10, 0)
+    end },
+
+    { name = "\u{E14}\u{E32}\u{E27}\u{E15}\u{E01}\u{E42}\u{E04}\u{E49}\u{E07}\u{E02}\u{E49}\u{E32}\u{E21}\u{E2B}\u{E31}\u{E27}", fn = function(i, n, t, hrp)
+        local F = flat(hrp)
+        local x = (rand(i, 71) - 0.5) * 20
+        local function at(q)
+            local aa = q * math.pi
+            return F * V3(x, math.sin(aa) * 22, -math.cos(aa) * 30)
+        end
+        local p = cyc(i, t, 2, 70)
+        return CFrame.lookAt(at(p), at(p + 0.01))
+    end },
+
+    { name = "\u{E04}\u{E25}\u{E37}\u{E48}\u{E19}\u{E22}\u{E31}\u{E01}\u{E29}\u{E4C}\u{E21}\u{E49}\u{E27}\u{E19}", fn = function(i, n, t, hrp)
+        local F = flat(hrp)
+        local cols = math.max(1, math.ceil(n / 4))
+        local c = (i - 1) % cols
+        local row = math.floor((i - 1) / cols)
+        local x = (c / math.max(1, cols - 1) - 0.5) * 40
+        local p = (t * 0.25) % 1
+        local ang = row / 4 * math.pi * 1.3 + t * 2
+        local R = 6
+        return CFrame.new(F * V3(x, 2 + R - math.cos(ang) * R, -50 + p * 50 - math.sin(ang) * R))
+    end },
+}
+
+-- apply MODE_NAMES + saved names
+local SAVE_FILE = "KittyPropFX_names.json"
+for i, nm in ipairs(MODE_NAMES) do
+    if MODES[i] and type(nm) == "string" and nm ~= "" then
+        MODES[i].name = nm
+    end
+end
+pcall(function()
+    if isfile and readfile and isfile(SAVE_FILE) then
+        local data = game:GetService("HttpService"):JSONDecode(readfile(SAVE_FILE))
+        for k, nm in pairs(data) do
+            local i = tonumber(k)
+            if i and MODES[i] and type(nm) == "string" and nm ~= "" then
+                MODES[i].name = nm
+            end
+        end
+    end
+end)
+local function saveNames()
+    local ok = pcall(function()
+        local data = {}
+        for i, m in ipairs(MODES) do
+            data[tostring(i)] = m.name
+        end
+        writefile(SAVE_FILE, game:GetService("HttpService"):JSONEncode(data))
+    end)
+    return ok
+end
+
+----------------------------------------------------------------
+-- Spread / distance layout (skipped for raw modes)
+----------------------------------------------------------------
+local function applyLayout(cfs, n, hrp)
+    local sp, ds = state.spread, state.dist
+    if sp == 1 and ds == 0 then
+        return
+    end
+    local hp = hrp.Position
+    local sum, cnt = V3(), 0
+    for i = 1, n do
+        if cfs[i] then
+            sum += cfs[i].Position - hp
+            cnt += 1
+        end
+    end
+    if cnt == 0 then
+        return
+    end
+    local C = sum / cnt
+    local Ch = V3(C.X, 0, C.Z)
+    local centered = Ch.Magnitude < 3
+    local push = centered and V3() or Ch.Unit * ds
+    for i = 1, n do
+        local cf = cfs[i]
+        if cf then
+            local rel = C + (cf.Position - hp - C) * sp + push
+            if centered and ds ~= 0 then
+                local h = V3(rel.X, 0, rel.Z)
+                local mag = h.Magnitude
+                if mag > 0.01 then
+                    rel += h.Unit * math.max(ds, 1 - mag)
+                end
+            end
+            cfs[i] = cf.Rotation + (hp + rel)
+        end
+    end
+end
+
+----------------------------------------------------------------
+-- Targets
+----------------------------------------------------------------
+local function getRootPart()
+    local char = player.Character
+    if not char then
+        return nil
+    end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if not hum or hum.Health <= 0 or not hrp then
+        return nil
+    end
+    return hrp
+end
+
+local function findAllTargets()
+    local root = workspace:FindFirstChild(CONFIG.RootName)
+    if not root then
+        return nil, "\u{E44}\u{E21}\u{E48}\u{E1E}\u{E1A} workspace." .. CONFIG.RootName
+    end
+    local folder = root:FindFirstChild(CONFIG.FolderName)
+    if not folder then
+        return nil, "\u{E44}\u{E21}\u{E48}\u{E1E}\u{E1A}\u{E42}\u{E1F}\u{E25}\u{E40}\u{E14}\u{E2D}\u{E23}\u{E4C} " .. CONFIG.FolderName
+    end
+    local list = {}
+    for i, child in ipairs(folder:GetChildren()) do
+        if child.Name == CONFIG.PropName then
+            local remote = child:FindFirstChild(CONFIG.RemoteName)
+            if remote and remote:IsA("RemoteFunction") then
+                table.insert(list, { index = i, remote = remote })
+            end
+        end
+    end
+    if #list == 0 then
+        return nil, "\u{E44}\u{E21}\u{E48}\u{E1E}\u{E1A} \"" .. CONFIG.PropName .. "\" \u{E17}\u{E35}\u{E48}\u{E21}\u{E35} " .. CONFIG.RemoteName
+    end
+    return list
+end
+
+local entryCache = setmetatable({}, { __mode = "k" })
+
+local function rescan()
+    local list, err = findAllTargets()
+    if not list then
+        state.targets = {}
+        return false, err
+    end
+    local out = {}
+    for _, t in ipairs(list) do
+        local e = entryCache[t.remote] or { remote = t.remote, inFlight = false, sentAt = 0 }
+        e.index = t.index
+        entryCache[t.remote] = e
+        table.insert(out, e)
+    end
+    state.targets = out
+    return true
+end
+
+local function sendCFrame(entry, cf)
+    local now = os.clock()
+    if entry.inFlight and now - entry.sentAt < CONFIG.InvokeTimeout then
+        return
+    end
+    entry.inFlight = true
+    entry.sentAt = now
+    task.spawn(function()
+        pcall(entry.remote.InvokeServer, entry.remote, cf)
+        entry.inFlight = false
+    end)
+end
+
+----------------------------------------------------------------
+-- UI: Hello Kitty pink (pure Instance.new, no external library)
+----------------------------------------------------------------
+local T = {
+    bg = Color3.fromRGB(255, 228, 240),
+    bg2 = Color3.fromRGB(255, 206, 226),
+    card = Color3.fromRGB(255, 246, 250),
+    soft = Color3.fromRGB(255, 214, 232),
+    pink = Color3.fromRGB(255, 160, 200),
+    hot = Color3.fromRGB(255, 102, 168),
+    deep = Color3.fromRGB(214, 62, 128),
+    text = Color3.fromRGB(122, 40, 86),
+    sub = Color3.fromRGB(184, 104, 144),
+    white = Color3.fromRGB(255, 255, 255),
+    ink = Color3.fromRGB(60, 40, 50),
+    bow = Color3.fromRGB(255, 56, 110),
+    nose = Color3.fromRGB(255, 205, 80),
+    err = Color3.fromRGB(255, 80, 110),
+}
+local FONT_TITLE = Enum.Font.FredokaOne
+local FONT = Enum.Font.GothamBold
+local FONT_LIGHT = Enum.Font.GothamMedium
+
+local connections = {}
+local function bind(sig, fn)
+    local c = sig:Connect(fn)
+    table.insert(connections, c)
+    return c
+end
+
+local function new(class, props, children)
+    local o = Instance.new(class)
+    local parent
+    for k, v in pairs(props or {}) do
+        if k == "Parent" then
+            parent = v
+        else
+            o[k] = v
+        end
+    end
+    for _, c in ipairs(children or {}) do
+        c.Parent = o
+    end
+    if parent then
+        o.Parent = parent
+    end
+    return o
+end
+
+local function corner(r)
+    return new("UICorner", { CornerRadius = typeof(r) == "UDim" and r or UDim.new(0, r or 12) })
+end
+
+local function stroke(c, th)
+    return new("UIStroke", { Color = c or T.pink, Thickness = th or 2, ApplyStrokeMode = Enum.ApplyStrokeMode.Border })
+end
+
+local function pad(p)
+    return new("UIPadding", {
+        PaddingLeft = UDim.new(0, p), PaddingRight = UDim.new(0, p),
+        PaddingTop = UDim.new(0, p), PaddingBottom = UDim.new(0, p),
+    })
+end
+
+local function tween(o, t, props, style, dir)
+    local tw = TweenService:Create(o, TweenInfo.new(t, style or Enum.EasingStyle.Quint, dir or Enum.EasingDirection.Out), props)
+    tw:Play()
+    return tw
+end
+
+-- GUI parent (gethui > CoreGui > PlayerGui)
+local GUI_NAME = "KittyPropFX"
+local function pickParent()
+    local ok, h = pcall(function()
+        return gethui and gethui()
+    end)
+    if ok and h then
+        return h
+    end
+    local ok2, cg = pcall(function()
+        local c = game:GetService("CoreGui")
+        local _ = c:GetChildren()
+        return c
+    end)
+    if ok2 and cg then
+        return cg
+    end
+    return player:WaitForChild("PlayerGui")
+end
+local parentGui = pickParent()
+pcall(function()
+    local old = parentGui:FindFirstChild(GUI_NAME)
+    if old then
+        old:Destroy()
+    end
+end)
+
+local Gui = new("ScreenGui", {
+    Name = GUI_NAME,
+    ResetOnSpawn = false,
+    IgnoreGuiInset = true,
+    ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+})
+local okParent = pcall(function()
+    Gui.Parent = parentGui
+end)
+if not okParent then
+    Gui.Parent = player:WaitForChild("PlayerGui")
+end
+
+-- Hello Kitty face drawn with frames (60x60 design grid)
+local function makeKitty(parent, size, pos, zBase)
+    local z = zBase or 2
+    local box = new("Frame", { Size = UDim2.fromOffset(size, size), Position = pos, BackgroundTransparency = 1, ZIndex = z, Parent = parent })
+    local s = size / 60
+    local line = math.max(1, 2 * s)
+    local function oval(x, y, w, h, color, zi, rot, rad, outline, transparent)
+        local f = new("Frame", {
+            Position = UDim2.fromOffset(x * s, y * s), Size = UDim2.fromOffset(w * s, h * s),
+            AnchorPoint = Vector2.new(0.5, 0.5),
+            BackgroundColor3 = color or T.white, BackgroundTransparency = transparent and 1 or 0,
+            Rotation = rot or 0, BorderSizePixel = 0, ZIndex = z + zi, Parent = box,
+        })
+        corner(rad or UDim.new(0.5, 0)).Parent = f
+        if outline then
+            new("UIStroke", { Color = T.ink, Thickness = outline == true and line or outline * s, Parent = f })
+        end
+        return f
+    end
+    -- ears (behind head)
+    oval(15, 18, 16, 16, T.white, 1, 30, UDim.new(0.25, 0), true)
+    oval(45, 18, 16, 16, T.white, 1, -30, UDim.new(0.25, 0), true)
+    -- head (wide oval)
+    oval(30, 35, 52, 38, T.white, 2, 0, UDim.new(0.5, 0), true)
+    -- eyes (tall ovals)
+    oval(20, 37, 4, 6, T.ink, 3)
+    oval(40, 37, 4, 6, T.ink, 3)
+    -- nose
+    oval(30, 42, 6, 4, T.nose, 3, 0, UDim.new(0.5, 0), 1.2)
+    -- whiskers (3 each side)
+    for k = -1, 1 do
+        oval(4, 37 + k * 5, 12, 2, T.ink, 4, k * 12, UDim.new(0.5, 0))
+        oval(56, 37 + k * 5, 12, 2, T.ink, 4, -k * 12, UDim.new(0.5, 0))
+    end
+    -- bow on right ear
+    oval(39, 16, 13, 15, T.bow, 4, -35, UDim.new(0.5, 0), true)
+    oval(53, 23, 13, 15, T.bow, 4, 35, UDim.new(0.5, 0), true)
+    oval(39, 17, 5, 5, T.bow, 5, 0, UDim.new(0.5, 0), 1.3, true)
+    oval(52, 22, 5, 5, T.bow, 5, 0, UDim.new(0.5, 0), 1.3, true)
+    oval(46, 20, 9, 9, T.bow, 6, 0, UDim.new(0.5, 0), true)
+    return box
+end
+
+-- tiny bow icon
+local function makeBow(parent, size, pos, z)
+    local box = new("Frame", { Size = UDim2.fromOffset(size, size * 0.7), Position = pos, BackgroundTransparency = 1, ZIndex = z or 3, Parent = parent })
+    local w = size
+    local function o(x, y, a, b, rot, zi)
+        local f = new("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromOffset(x * w, y * w), Size = UDim2.fromOffset(a * w, b * w),
+            BackgroundColor3 = T.bow, Rotation = rot, BorderSizePixel = 0, ZIndex = (z or 3) + zi, Parent = box })
+        corner(UDim.new(0.5, 0)).Parent = f
+        new("UIStroke", { Color = T.ink, Thickness = 1, Parent = f })
+    end
+    o(0.27, 0.35, 0.45, 0.55, -25, 0)
+    o(0.73, 0.35, 0.45, 0.55, 25, 0)
+    o(0.5, 0.35, 0.25, 0.25, 0, 1)
+    return box
+end
+
+-- Main window
+local W, H, HEADER = 390, 540, 86
+local Main = new("Frame", {
+    Name = "Main",
+    Size = UDim2.fromOffset(W, H),
+    Position = UDim2.new(0.5, -W / 2, 0.5, -H / 2),
+    BackgroundColor3 = T.bg,
+    BorderSizePixel = 0,
+    ClipsDescendants = true,
+    Active = true,
+    Parent = Gui,
+}, {
+    corner(22),
+    stroke(T.hot, 3),
+    new("UIGradient", {
+        Color = ColorSequence.new(T.bg, T.bg2),
+        Rotation = 90,
+    }),
+})
+local MainScale = new("UIScale", { Scale = 0.6, Parent = Main })
+
+-- polka dots
+for k = 1, 14 do
+    local d = 8 + (k % 3) * 6
+    new("Frame", {
+        Size = UDim2.fromOffset(d, d),
+        Position = UDim2.fromOffset(20 + rand(k, 90) * (W - 50), HEADER + 20 + rand(k, 91) * (H - HEADER - 60)),
+        BackgroundColor3 = T.white,
+        BackgroundTransparency = 0.45,
+        BorderSizePixel = 0,
+        Parent = Main,
+    }, { corner(UDim.new(0.5, 0)) })
+end
+
+-- big faded kitty watermark
+local Water = makeKitty(Main, 220, UDim2.new(1, -170, 1, -170), 0)
+for _, d in ipairs(Water:GetDescendants()) do
+    if d:IsA("Frame") then d.BackgroundTransparency = math.max(d.BackgroundTransparency, 0.8) end
+    if d:IsA("UIStroke") then d.Transparency = 0.8 end
+end
+
+-- Header
+local Header = new("Frame", {
+    Size = UDim2.new(1, 0, 0, HEADER),
+    BackgroundColor3 = T.pink,
+    BorderSizePixel = 0,
+    Active = true,
+    Parent = Main,
+}, {
+    corner(22),
+    new("UIGradient", { Color = ColorSequence.new(T.hot, T.pink), Rotation = 0 }),
+})
+-- square-off bottom corners of header
+new("Frame", { Size = UDim2.new(1, 0, 0, 22), Position = UDim2.new(0, 0, 1, -22), BackgroundColor3 = T.pink, BorderSizePixel = 0, Parent = Header },
+    { new("UIGradient", { Color = ColorSequence.new(T.hot, T.pink), Rotation = 0 }) })
+
+local Kitty = makeKitty(Header, 70, UDim2.fromOffset(8, 6), 3)
+
+new("TextLabel", {
+    Text = UI_TEXT.title,
+    Font = FONT_TITLE,
+    TextSize = 26,
+    TextColor3 = T.white,
+    TextXAlignment = Enum.TextXAlignment.Left,
+    BackgroundTransparency = 1,
+    Position = UDim2.fromOffset(86, 14),
+    Size = UDim2.new(1, -170, 0, 30),
+    Parent = Header,
+}, { new("UIStroke", { Color = T.deep, Thickness = 1.5 }) })
+
+new("TextLabel", {
+    Text = UI_TEXT.subtitle,
+    Font = FONT_LIGHT,
+    TextSize = 13,
+    TextColor3 = T.white,
+    TextXAlignment = Enum.TextXAlignment.Left,
+    BackgroundTransparency = 1,
+    Position = UDim2.fromOffset(87, 46),
+    Size = UDim2.new(1, -170, 0, 18),
+    Parent = Header,
+})
+
+local StatusPill = new("TextLabel", {
+    Text = "\u{25CF} \u{E2B}\u{E22}\u{E38}\u{E14}\u{E2D}\u{E22}\u{E39}\u{E48}",
+    Font = FONT,
+    TextSize = 12,
+    TextColor3 = T.deep,
+    BackgroundColor3 = T.white,
+    Position = UDim2.new(1, -96, 0, 52),
+    Size = UDim2.fromOffset(84, 22),
+    Parent = Header,
+}, { corner(11) })
+
+local function headerBtn(txt, x)
+    local b = new("TextButton", {
+        Text = txt,
+        Font = FONT_TITLE,
+        TextSize = 16,
+        TextColor3 = T.hot,
+        BackgroundColor3 = T.white,
+        AutoButtonColor = false,
+        Position = UDim2.new(1, x, 0, 10),
+        Size = UDim2.fromOffset(26, 26),
+        Parent = Header,
+    }, { corner(13) })
+    bind(b.MouseEnter, function() tween(b, 0.15, { BackgroundColor3 = T.soft }) end)
+    bind(b.MouseLeave, function() tween(b, 0.15, { BackgroundColor3 = T.white }) end)
+    return b
+end
+local MinBtn = headerBtn("-", -70)
+local CloseBtn = headerBtn("x", -38)
+
+-- Body
+local Body = new("ScrollingFrame", {
+    Position = UDim2.fromOffset(0, HEADER),
+    Size = UDim2.new(1, 0, 1, -HEADER),
+    BackgroundTransparency = 1,
+    BorderSizePixel = 0,
+    ScrollBarThickness = 5,
+    ScrollBarImageColor3 = T.hot,
+    CanvasSize = UDim2.new(),
+    AutomaticCanvasSize = Enum.AutomaticSize.Y,
+    Parent = Main,
+}, {
+    new("UIListLayout", { Padding = UDim.new(0, 12), SortOrder = Enum.SortOrder.LayoutOrder }),
+    new("UIPadding", { PaddingLeft = UDim.new(0, 14), PaddingRight = UDim.new(0, 14), PaddingTop = UDim.new(0, 14), PaddingBottom = UDim.new(0, 16) }),
+})
+
+local cardOrder = 0
+local function makeCard(title)
+    cardOrder += 1
+    local card = new("Frame", {
+        Size = UDim2.new(1, 0, 0, 0),
+        AutomaticSize = Enum.AutomaticSize.Y,
+        BackgroundColor3 = T.card,
+        LayoutOrder = cardOrder,
+        Parent = Body,
+    }, {
+        corner(16),
+        stroke(T.pink, 2),
+        pad(12),
+        new("UIListLayout", { Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder }),
+    })
+    local head = new("Frame", { Size = UDim2.new(1, 0, 0, 22), BackgroundTransparency = 1, LayoutOrder = 0, Parent = card })
+    makeBow(head, 26, UDim2.fromOffset(0, 3), 3)
+    local tl = new("TextLabel", {
+        Text = title,
+        Font = FONT_TITLE,
+        TextSize = 17,
+        TextColor3 = T.deep,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        BackgroundTransparency = 1,
+        Position = UDim2.fromOffset(32, 0),
+        Size = UDim2.new(1, -32, 1, 0),
+        Parent = head,
+    })
+    return card, tl
+end
+
+local function label(parent, text, order, size, color)
+    return new("TextLabel", {
+        Text = text,
+        Font = FONT_LIGHT,
+        TextSize = size or 13,
+        TextColor3 = color or T.text,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        TextWrapped = true,
+        BackgroundTransparency = 1,
+        Size = UDim2.new(1, 0, 0, (size or 13) + 6),
+        LayoutOrder = order or 1,
+        Parent = parent,
+    })
+end
+
+local function makeToggle(parent, text, default, order, onChange)
+    local row = new("Frame", { Size = UDim2.new(1, 0, 0, 30), BackgroundTransparency = 1, LayoutOrder = order, Parent = parent })
+    new("TextLabel", {
+        Text = text, Font = FONT, TextSize = 14, TextColor3 = T.text,
+        TextXAlignment = Enum.TextXAlignment.Left, BackgroundTransparency = 1,
+        Size = UDim2.new(1, -64, 1, 0), Parent = row,
+    })
+    local track = new("TextButton", {
+        Text = "", AutoButtonColor = false,
+        Size = UDim2.fromOffset(54, 28), Position = UDim2.new(1, -54, 0.5, -14),
+        BackgroundColor3 = T.soft, Parent = row,
+    }, { corner(14), stroke(T.pink, 1.5) })
+    local knob = new("TextLabel", {
+        Text = "\u{2661}", Font = FONT_TITLE, TextSize = 13, TextColor3 = T.pink,
+        Size = UDim2.fromOffset(22, 22), Position = UDim2.fromOffset(3, 3),
+        BackgroundColor3 = T.white, Parent = track,
+    }, { corner(11) })
+    local obj = { state = default and true or false }
+    local function render()
+        tween(track, 0.2, { BackgroundColor3 = obj.state and T.hot or T.soft })
+        tween(knob, 0.25, { Position = obj.state and UDim2.fromOffset(29, 3) or UDim2.fromOffset(3, 3) }, Enum.EasingStyle.Back)
+        knob.Text = obj.state and "\u{2665}" or "\u{2661}"
+        knob.TextColor3 = obj.state and T.hot or T.pink
+    end
+    function obj:set(v, fire)
+        obj.state = v and true or false
+        render()
+        if fire and onChange then
+            onChange(obj.state)
+        end
+    end
+    bind(track.MouseButton1Click, function()
+        obj:set(not obj.state, true)
+    end)
+    render()
+    return obj
+end
+
+local function makeButton(parent, text, order, onClick)
+    local b = new("TextButton", {
+        Text = text, Font = FONT, TextSize = 14, TextColor3 = T.white,
+        AutoButtonColor = false, BackgroundColor3 = T.hot,
+        Size = UDim2.new(1, 0, 0, 34), LayoutOrder = order, Parent = parent,
+    }, { corner(17), new("UIGradient", { Color = ColorSequence.new(T.hot, T.pink), Rotation = 0 }) })
+    local sc = new("UIScale", { Parent = b })
+    bind(b.MouseEnter, function() tween(sc, 0.15, { Scale = 1.03 }) end)
+    bind(b.MouseLeave, function() tween(sc, 0.15, { Scale = 1 }) end)
+    bind(b.MouseButton1Click, function()
+        sc.Scale = 0.92
+        tween(sc, 0.3, { Scale = 1 }, Enum.EasingStyle.Back)
+        onClick()
+    end)
+    return b
+end
+
+local sliderDrag = nil
+local function makeSlider(parent, text, min, max, step, default, order, fmt, onChange)
+    local row = new("Frame", { Size = UDim2.new(1, 0, 0, 44), BackgroundTransparency = 1, LayoutOrder = order, Parent = parent })
+    new("TextLabel", {
+        Text = text, Font = FONT, TextSize = 13, TextColor3 = T.text,
+        TextXAlignment = Enum.TextXAlignment.Left, BackgroundTransparency = 1,
+        Size = UDim2.new(1, -70, 0, 18), Parent = row,
+    })
+    local valLbl = new("TextLabel", {
+        Text = "", Font = FONT, TextSize = 12, TextColor3 = T.white,
+        BackgroundColor3 = T.hot, Size = UDim2.fromOffset(60, 18),
+        Position = UDim2.new(1, -60, 0, 0), Parent = row,
+    }, { corner(9) })
+    local bar = new("Frame", {
+        Size = UDim2.new(1, -10, 0, 10), Position = UDim2.fromOffset(5, 28),
+        BackgroundColor3 = T.soft, Active = true, Parent = row,
+    }, { corner(5) })
+    local fill = new("Frame", { Size = UDim2.new(0, 0, 1, 0), BackgroundColor3 = T.hot, BorderSizePixel = 0, Parent = bar }, { corner(5) })
+    local knob = new("TextLabel", {
+        Text = "\u{2665}", Font = FONT_TITLE, TextSize = 11, TextColor3 = T.hot,
+        AnchorPoint = Vector2.new(0.5, 0.5), Size = UDim2.fromOffset(20, 20),
+        Position = UDim2.new(0, 0, 0.5, 0), BackgroundColor3 = T.white, Active = true, Parent = bar,
+    }, { corner(10), stroke(T.hot, 2) })
+
+    local obj = { value = default }
+    local function apply(v, fire)
+        v = math.clamp(math.floor((v - min) / step + 0.5) * step + min, min, max)
+        local changed = v ~= obj.value
+        obj.value = v
+        local a = (v - min) / (max - min)
+        fill.Size = UDim2.new(a, 0, 1, 0)
+        knob.Position = UDim2.new(a, 0, 0.5, 0)
+        valLbl.Text = fmt and fmt(v) or tostring(v)
+        if fire and (changed or fire == "force") and onChange then
+            onChange(v)
+        end
+    end
+    function obj:fromX(x)
+        local a = math.clamp((x - bar.AbsolutePosition.X) / math.max(1, bar.AbsoluteSize.X), 0, 1)
+        apply(min + (max - min) * a, true)
+    end
+    local function begin(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            sliderDrag = obj
+            tween(knob, 0.15, { Size = UDim2.fromOffset(24, 24) })
+            obj:fromX(input.Position.X)
+        end
+    end
+    function obj:release()
+        tween(knob, 0.15, { Size = UDim2.fromOffset(20, 20) })
+    end
+    bind(bar.InputBegan, begin)
+    bind(knob.InputBegan, begin)
+    apply(default, "force")
+    return obj
+end
+
+bind(UserInputService.InputChanged, function(input)
+    if sliderDrag and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        sliderDrag:fromX(input.Position.X)
+    end
+end)
+bind(UserInputService.InputEnded, function(input)
+    if sliderDrag and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+        sliderDrag:release()
+        sliderDrag = nil
+    end
+end)
+
+-- Toasts
+local ToastHolder = new("Frame", {
+    AnchorPoint = Vector2.new(1, 1),
+    Position = UDim2.new(1, -16, 1, -16),
+    Size = UDim2.new(0, 270, 0.6, 0),
+    BackgroundTransparency = 1,
+    Parent = Gui,
+}, {
+    new("UIListLayout", { Padding = UDim.new(0, 8), VerticalAlignment = Enum.VerticalAlignment.Bottom, SortOrder = Enum.SortOrder.LayoutOrder }),
+})
+local toastN = 0
+
+local function notify(text, isError, silent)
+    if silent or not Gui.Parent then
+        return
+    end
+    toastN += 1
+    local slot = new("Frame", { Size = UDim2.new(1, 0, 0, 58), BackgroundTransparency = 1, LayoutOrder = toastN, Parent = ToastHolder })
+    local card = new("Frame", {
+        Size = UDim2.new(1, 0, 1, 0), Position = UDim2.new(1, 30, 0, 0),
+        BackgroundColor3 = T.white, Parent = slot,
+    }, { corner(16), stroke(isError and T.err or T.hot, 2) })
+    local icon = new("Frame", {
+        BackgroundColor3 = isError and T.err or T.soft,
+        Size = UDim2.fromOffset(40, 40), Position = UDim2.fromOffset(9, 9), Parent = card,
+    }, { corner(20) })
+    makeKitty(icon, 36, UDim2.fromOffset(2, 3), 2)
+    new("TextLabel", {
+        Text = isError and "Prop FX  oops!" or "Prop FX \u{2661}", Font = FONT_TITLE, TextSize = 14,
+        TextColor3 = isError and T.err or T.hot, TextXAlignment = Enum.TextXAlignment.Left,
+        BackgroundTransparency = 1, Position = UDim2.fromOffset(56, 7), Size = UDim2.new(1, -64, 0, 18), Parent = card,
+    })
+    new("TextLabel", {
+        Text = text, Font = FONT_LIGHT, TextSize = 12, TextColor3 = T.text,
+        TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top,
+        TextWrapped = true, TextTruncate = Enum.TextTruncate.AtEnd,
+        BackgroundTransparency = 1, Position = UDim2.fromOffset(56, 25), Size = UDim2.new(1, -64, 0, 30), Parent = card,
+    })
+    tween(card, 0.45, { Position = UDim2.new(0, 0, 0, 0) }, Enum.EasingStyle.Back)
+    task.delay(3.2, function()
+        if card.Parent then
+            tween(card, 0.35, { Position = UDim2.new(1, 30, 0, 0) }, Enum.EasingStyle.Quint, Enum.EasingDirection.In)
+            task.wait(0.4)
+            slot:Destroy()
+        end
+    end)
+    _ = icon
+end
+
+----------------------------------------------------------------
+-- State control
+----------------------------------------------------------------
+local AUTO_TIME = CONFIG.AutoSwitchTime
+local refreshModes = function() end
+
+local function refreshStatus()
+    if state.running then
+        StatusPill.Text = ("\u{25CF} \u{E40}\u{E25}\u{E48}\u{E19}\u{E2D}\u{E22}\u{E39}\u{E48} (%d)"):format(#state.targets)
+        StatusPill.TextColor3 = T.white
+        tween(StatusPill, 0.2, { BackgroundColor3 = T.deep })
+    else
+        StatusPill.Text = "\u{25CF} \u{E2B}\u{E22}\u{E38}\u{E14}\u{E2D}\u{E22}\u{E39}\u{E48}"
+        StatusPill.TextColor3 = T.deep
+        tween(StatusPill, 0.2, { BackgroundColor3 = T.white })
+    end
+end
+
+local function setMode(i, silent)
+    state.mode = i
+    refreshModes()
+    notify("\u{E42}\u{E2B}\u{E21}\u{E14}: " .. MODES[i].name, false, silent)
+end
+
+local function setRunning(on)
+    if on then
+        if not getRootPart() then
+            notify("\u{E44}\u{E21}\u{E48}\u{E1E}\u{E1A}\u{E15}\u{E31}\u{E27}\u{E25}\u{E30}\u{E04}\u{E23}", true)
+            refreshStatus()
+            return false
+        end
+        local ok, err = rescan()
+        if not ok then
+            notify(err, true)
+            refreshStatus()
+            return false
+        end
+        state.lastScan = os.clock()
+        state.running = true
+        notify(("\u{E40}\u{E23}\u{E34}\u{E48}\u{E21} %s (%d \u{E2D}\u{E31}\u{E19})"):format(MODES[state.mode].name, #state.targets))
+    else
+        state.running = false
+    end
+    refreshStatus()
+    return true
+end
+
+local function teleportOnce()
+    local hrp = getRootPart()
+    if not hrp then
+        notify("\u{E44}\u{E21}\u{E48}\u{E1E}\u{E1A}\u{E15}\u{E31}\u{E27}\u{E25}\u{E30}\u{E04}\u{E23}", true)
+        return
+    end
+    local list, err = findAllTargets()
+    if not list then
+        notify(err, true)
+        return
+    end
+    local cf = hrp.CFrame
+    local okCount, done = 0, 0
+    for _, t in ipairs(list) do
+        task.spawn(function()
+            local s, res = pcall(t.remote.InvokeServer, t.remote, cf)
+            if s and res ~= false then
+                okCount += 1
+            end
+            done += 1
+        end)
+    end
+    local t0 = os.clock()
+    while done < #list and os.clock() - t0 < CONFIG.InvokeTimeout do
+        task.wait()
+    end
+    notify(("\u{E14}\u{E36}\u{E07}\u{E21}\u{E32}\u{E17}\u{E35}\u{E48}\u{E15}\u{E31}\u{E27}\u{E2A}\u{E33}\u{E40}\u{E23}\u{E47}\u{E08} %d/%d \u{E2D}\u{E31}\u{E19}"):format(okCount, #list), okCount == 0)
+end
+
+----------------------------------------------------------------
+-- Cards
+----------------------------------------------------------------
+-- 1) Modes
+local ModeCard = makeCard(UI_TEXT.cardModes)
+local CurrentLbl = label(ModeCard, "", 1, 13, T.sub)
+local Grid = new("ScrollingFrame", {
+    Size = UDim2.new(1, 0, 0, 170),
+    BackgroundColor3 = T.bg,
+    BorderSizePixel = 0,
+    ScrollBarThickness = 4,
+    ScrollBarImageColor3 = T.hot,
+    CanvasSize = UDim2.new(),
+    AutomaticCanvasSize = Enum.AutomaticSize.Y,
+    LayoutOrder = 2,
+    Parent = ModeCard,
+}, {
+    corner(12),
+    new("UIPadding", { PaddingLeft = UDim.new(0, 6), PaddingRight = UDim.new(0, 10), PaddingTop = UDim.new(0, 6), PaddingBottom = UDim.new(0, 6) }),
+    new("UIGridLayout", { CellSize = UDim2.new(0.5, -4, 0, 30), CellPadding = UDim2.fromOffset(6, 6), SortOrder = Enum.SortOrder.LayoutOrder }),
+})
+
+-- \u{270F}\u{FE0F} rename row
+local RenameRow = new("Frame", { Size = UDim2.new(1, 0, 0, 32), BackgroundTransparency = 1, LayoutOrder = 3, Parent = ModeCard })
+local RenameBox = new("TextBox", {
+    Text = "", PlaceholderText = "\u{270F}\u{FE0F} \u{E1E}\u{E34}\u{E21}\u{E1E}\u{E4C}\u{E0A}\u{E37}\u{E48}\u{E2D}\u{E43}\u{E2B}\u{E21}\u{E48}\u{E43}\u{E2B}\u{E49}\u{E42}\u{E2B}\u{E21}\u{E14}\u{E19}\u{E35}\u{E49}...", ClearTextOnFocus = false,
+    Font = FONT_LIGHT, TextSize = 13, TextColor3 = T.text, PlaceholderColor3 = T.sub,
+    TextXAlignment = Enum.TextXAlignment.Left, BackgroundColor3 = T.white,
+    Size = UDim2.new(1, -82, 1, 0), Parent = RenameRow,
+}, { corner(16), stroke(T.pink, 1.5), new("UIPadding", { PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 8) }) })
+local RenameBtn = new("TextButton", {
+    Text = "\u{E1A}\u{E31}\u{E19}\u{E17}\u{E36}\u{E01} \u{2665}", Font = FONT, TextSize = 13, TextColor3 = T.white, AutoButtonColor = false,
+    BackgroundColor3 = T.hot, Size = UDim2.new(0, 74, 1, 0), Position = UDim2.new(1, -74, 0, 0), Parent = RenameRow,
+}, { corner(16) })
+
+local modeButtons = {}
+for i, m in ipairs(MODES) do
+    local b = new("TextButton", {
+        Text = ("%d. %s"):format(i, m.name),
+        Font = FONT_LIGHT, TextSize = 12, TextColor3 = T.text,
+        TextTruncate = Enum.TextTruncate.AtEnd,
+        AutoButtonColor = false, BackgroundColor3 = T.white,
+        LayoutOrder = i, Parent = Grid,
+    }, { corner(10), stroke(T.soft, 1.5), new("UIPadding", { PaddingLeft = UDim.new(0, 6), PaddingRight = UDim.new(0, 6) }) })
+    bind(b.MouseButton1Click, function()
+        setMode(i, true)
+    end)
+    bind(b.MouseEnter, function()
+        if state.mode ~= i then tween(b, 0.12, { BackgroundColor3 = T.soft }) end
+    end)
+    bind(b.MouseLeave, function()
+        if state.mode ~= i then tween(b, 0.12, { BackgroundColor3 = T.white }) end
+    end)
+    modeButtons[i] = b
+end
+
+refreshModes = function()
+    for i, b in ipairs(modeButtons) do
+        local sel = i == state.mode
+        tween(b, 0.18, { BackgroundColor3 = sel and T.hot or T.white })
+        b.TextColor3 = sel and T.white or T.text
+        b.Font = sel and FONT or FONT_LIGHT
+    end
+    CurrentLbl.Text = ("\u{2665} \u{E15}\u{E2D}\u{E19}\u{E19}\u{E35}\u{E49}: %d. %s"):format(state.mode, MODES[state.mode].name)
+    if not RenameBox:IsFocused() then
+        RenameBox.Text = MODES[state.mode].name
+    end
+    local b = modeButtons[state.mode]
+    if b and b.AbsoluteSize.Y > 0 then
+        local y = b.AbsolutePosition.Y - Grid.AbsolutePosition.Y + Grid.CanvasPosition.Y
+        Grid.CanvasPosition = Vector2.new(0, math.max(0, y - 60))
+    end
+end
+
+local function renameMode(i, nm)
+    nm = (nm or ""):gsub("^%s+", ""):gsub("%s+$", "")
+    if nm == "" then
+        notify("\u{E43}\u{E2A}\u{E48}\u{E0A}\u{E37}\u{E48}\u{E2D}\u{E01}\u{E48}\u{E2D}\u{E19}\u{E19}\u{E30}", true)
+        return
+    end
+    MODES[i].name = nm
+    modeButtons[i].Text = ("%d. %s"):format(i, nm)
+    refreshModes()
+    local saved = saveNames()
+    notify(("\u{E40}\u{E1B}\u{E25}\u{E35}\u{E48}\u{E22}\u{E19}\u{E0A}\u{E37}\u{E48}\u{E2D}\u{E42}\u{E2B}\u{E21}\u{E14} %d \u{E40}\u{E1B}\u{E47}\u{E19} \"%s\"%s"):format(i, nm, saved and " (\u{E1A}\u{E31}\u{E19}\u{E17}\u{E36}\u{E01}\u{E41}\u{E25}\u{E49}\u{E27})" or ""))
+end
+bind(RenameBtn.MouseButton1Click, function()
+    renameMode(state.mode, RenameBox.Text)
+end)
+bind(RenameBox.FocusLost, function(enter)
+    if enter then
+        renameMode(state.mode, RenameBox.Text)
+    end
+end)
+
+-- 2) Controls
+local CtrlCard = makeCard(UI_TEXT.cardControl)
+local startToggle
+startToggle = makeToggle(CtrlCard, UI_TEXT.startLabel, false, 1, function(on)
+    local ok = setRunning(on)
+    if on and not ok then
+        startToggle:set(false, false)
+    end
+end)
+makeToggle(CtrlCard, UI_TEXT.autoLabel, false, 2, function(on)
+    state.auto = on
+    state.autoTimer = 0
+end)
+makeButton(CtrlCard, UI_TEXT.pullButton, 3, function()
+    task.spawn(teleportOnce)
+end)
+label(CtrlCard, "\u{E1B}\u{E38}\u{E48}\u{E21}\u{E25}\u{E31}\u{E14}:  ]  = \u{E40}\u{E1B}\u{E34}\u{E14}/\u{E1B}\u{E34}\u{E14}   \u{2022}   RightShift = \u{E0B}\u{E48}\u{E2D}\u{E19}/\u{E42}\u{E0A}\u{E27}\u{E4C} UI", 4, 12, T.sub)
+
+-- 3) Tuning
+local TuneCard = makeCard(UI_TEXT.cardTune)
+makeSlider(TuneCard, "Auto \u{E2A}\u{E25}\u{E31}\u{E1A}\u{E17}\u{E38}\u{E01}", 3, 30, 1, CONFIG.AutoSwitchTime, 1, function(v) return v .. " \u{E27}\u{E34}" end, function(v)
+    AUTO_TIME = v
+end)
+makeSlider(TuneCard, "\u{E04}\u{E27}\u{E32}\u{E21}\u{E40}\u{E23}\u{E47}\u{E27}", 25, 300, 5, 100, 2, function(v) return v .. "%" end, function(v)
+    state.speed = v / 100
+end)
+makeSlider(TuneCard, "\u{E2B}\u{E48}\u{E32}\u{E07}\u{E01}\u{E31}\u{E19}", 25, 300, 5, 100, 3, function(v) return v .. "%" end, function(v)
+    state.spread = v / 100
+end)
+makeSlider(TuneCard, "\u{E23}\u{E30}\u{E22}\u{E30}\u{E08}\u{E32}\u{E01}\u{E15}\u{E31}\u{E27} (10 = \u{E15}\u{E23}\u{E07}\u{E01}\u{E25}\u{E32}\u{E07})", 0, 50, 1, 10, 4, function(v) return tostring(v - 10) end, function(v)
+    state.dist = v - 10
+end)
+makeSlider(TuneCard, "\u{E2D}\u{E31}\u{E1B}\u{E40}\u{E14}\u{E15}/\u{E27}\u{E34}\u{E19}\u{E32}\u{E17}\u{E35}", 5, 30, 1, CONFIG.UpdateRate, 5, function(v) return v .. "/s" end, function(v)
+    CONFIG.UpdateRate = v
+end)
+
+-- footer
+local Foot = new("TextLabel", {
+    Text = UI_TEXT.footer,
+    Font = FONT_TITLE, TextSize = 13, TextColor3 = T.hot,
+    BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 18),
+    LayoutOrder = 99, Parent = Body,
+})
+_ = Foot
+
+----------------------------------------------------------------
+-- Window behaviour: drag / minimize / close / hotkeys
+----------------------------------------------------------------
+do
+    local dragging, dragStart, startPos
+    bind(Header.InputBegan, function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = Main.Position
+        end
+    end)
+    bind(UserInputService.InputChanged, function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            local d = input.Position - dragStart
+            Main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + d.X, startPos.Y.Scale, startPos.Y.Offset + d.Y)
+        end
+    end)
+    bind(UserInputService.InputEnded, function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = false
+        end
+    end)
+end
+
+local minimized = false
+bind(MinBtn.MouseButton1Click, function()
+    minimized = not minimized
+    MinBtn.Text = minimized and "+" or "-"
+    if minimized then
+        Body.Visible = false
+    end
+    local tw = tween(Main, 0.3, { Size = UDim2.fromOffset(W, minimized and HEADER or H) })
+    if not minimized then
+        tw.Completed:Wait()
+        Body.Visible = true
+    end
+end)
+
+local heartbeatConn
+local function shutdown()
+    state.running = false
+    for _, c in ipairs(connections) do
+        pcall(function() c:Disconnect() end)
+    end
+    if heartbeatConn then
+        heartbeatConn:Disconnect()
+    end
+    Gui:Destroy()
+end
+
+bind(CloseBtn.MouseButton1Click, function()
+    tween(MainScale, 0.25, { Scale = 0 }, Enum.EasingStyle.Back, Enum.EasingDirection.In).Completed:Wait()
+    shutdown()
+end)
+
+bind(UserInputService.InputBegan, function(input, gpe)
+    if gpe then
+        return
+    end
+    if input.KeyCode == Enum.KeyCode.RightBracket then
+        local want = not state.running
+        local ok = setRunning(want)
+        if ok then
+            startToggle:set(want, false)
+        end
+    elseif input.KeyCode == Enum.KeyCode.RightShift then
+        Main.Visible = not Main.Visible
+    end
+end)
+
+-- kitty wiggle
+bind(RunService.RenderStepped, function()
+    local t = os.clock()
+    Kitty.Rotation = math.sin(t * 2) * 6
+    Kitty.Position = UDim2.fromOffset(8, 6 + math.sin(t * 3) * 2)
+end)
+
+-- open animation
+tween(MainScale, 0.5, { Scale = 1 }, Enum.EasingStyle.Back)
+task.defer(refreshModes)
+refreshStatus()
+notify("\u{E42}\u{E2B}\u{E25}\u{E14}\u{E40}\u{E2A}\u{E23}\u{E47}\u{E08}\u{E41}\u{E25}\u{E49}\u{E27} \u{2661} \u{E40}\u{E25}\u{E37}\u{E2D}\u{E01}\u{E42}\u{E2B}\u{E21}\u{E14}\u{E41}\u{E25}\u{E49}\u{E27}\u{E01}\u{E14}\u{E40}\u{E23}\u{E34}\u{E48}\u{E21}\u{E44}\u{E14}\u{E49}\u{E40}\u{E25}\u{E22}")
+
+----------------------------------------------------------------
+-- Main loop
+----------------------------------------------------------------
+local clock, accum = 0, 0
+local MAX_TRAIL = 400
+
+heartbeatConn = RunService.Heartbeat:Connect(function(dt)
+    local hrp = getRootPart()
+
+    if hrp then
+        local p = hrp.Position
+        local last = state.trail[#state.trail]
+        if not last or (p - last).Magnitude >= 1 then
+            table.insert(state.trail, p)
+            if #state.trail > MAX_TRAIL then
+                table.remove(state.trail, 1)
+            end
+        end
+    end
+
+    if not state.running then
+        return
+    end
+    clock += dt * state.speed
+    accum += dt
+
+    if state.auto then
+        state.autoTimer += dt
+        if state.autoTimer >= AUTO_TIME then
+            state.autoTimer = 0
+            setMode(state.mode % #MODES + 1)
+        end
+    end
+
+    if accum < 1 / CONFIG.UpdateRate then
+        return
+    end
+    accum = 0
+
+    if not hrp then
+        return
+    end
+
+    if os.clock() - state.lastScan > CONFIG.RescanInterval then
+        state.lastScan = os.clock()
+        rescan()
+        refreshStatus()
+    end
+
+    local n = #state.targets
+    if n == 0 then
+        return
+    end
+    local mode = MODES[state.mode]
+    local cfs = {}
+    for i = 1, n do
+        local ok, cf = pcall(mode.fn, i, n, clock, hrp)
+        if ok and typeof(cf) == "CFrame" then
+            cfs[i] = cf
+        end
+    end
+    if not mode.raw then
+        pcall(applyLayout, cfs, n, hrp)
+    end
+    for i, e in ipairs(state.targets) do
+        if cfs[i] then
+            sendCFrame(e, cfs[i])
+        end
+    end
+end)
+
+bind(player.CharacterAdded, function(char)
+    state.trail = {}
+    char:WaitForChild("HumanoidRootPart", 10)
+end)
